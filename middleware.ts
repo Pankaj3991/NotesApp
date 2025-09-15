@@ -23,7 +23,7 @@ export async function middleware(req: NextRequest) {
     loginUrl.searchParams.set("unauthorized", "1");
     return NextResponse.redirect(loginUrl);
   }
-
+  
   const headers = new Headers(req.headers);
   headers.set("x-user-id", user._id);
   headers.set("x-tenantId", user.tenantId);

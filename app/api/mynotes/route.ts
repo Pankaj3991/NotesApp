@@ -9,11 +9,14 @@ export async function GET(req: NextRequest) {
     await connectDB();
     const notes = await Note.find({ userId: userId });
     return NextResponse.json({ notes });
-  } catch (err: any) {
-    console.error("Get my notes error:", err.message);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
   }
 }

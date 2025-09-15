@@ -32,9 +32,14 @@ export default function MyNotesPage() {
       if (!res.ok) throw new Error("Failed to fetch notes");
       const data = await res.json();
       setNotes(data.notes || (data.note ? [data.note] : []));
-    } catch (err: any) {
-      setMessage(err.message);
-    } finally {
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      } else {
+        setMessage("An unknown error occurred");
+      }
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -45,12 +50,16 @@ export default function MyNotesPage() {
       if (!res.ok) throw new Error("Failed to fetch user details");
       const data = await res.json();
       setRole(data.user.role);
-
       // fetch admin data if role is admin
       if (data.user.role === "admin") fetchAdminData();
-    } catch (err: any) {
-      console.log(err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      } else {
+        console.log("An unknown error occurred");
+      }
     }
+
   };
 
   const fetchAdminData = async () => {
@@ -59,17 +68,23 @@ export default function MyNotesPage() {
       const tenantRes = await fetch("/api/tenants", { credentials: "include" });
       const tenantData = await tenantRes.json();
       setSubscription(tenantData.tenant.subscription);
+      setUsersCount(tenantData.userCount || 0);
+
 
       const notesRes = await fetch("/api/notes", { credentials: "include" });
       const notesData = await notesRes.json();
       setNotesCount(notesData.total || 0);
-      setUsersCount(notesData.totalUsers || 0);
 
 
       // setSubscription(tenantData.tenant?.subscription || "free");
-    } catch (err: any) {
-      console.log(err);
-    } finally {
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      } else {
+        console.log("An unknown error occurred");
+      }
+    }
+    finally {
       setAdminLoading(false);
     }
   };
@@ -84,9 +99,14 @@ export default function MyNotesPage() {
       if (!res.ok) throw new Error(data.message);
       setSubscription("pro");
       setMessage(data.message);
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      } else {
+        setMessage("An unknown error occurred");
+      }
     }
+
   };
 
   useEffect(() => {
@@ -101,9 +121,14 @@ export default function MyNotesPage() {
       if (!res.ok) throw new Error("Failed to delete note");
       setNotes(notes.filter((note) => note._id !== id));
       setMessage("Note deleted successfully!");
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      } else {
+        setMessage("An unknown error occurred");
+      }
     }
+
   };
 
   const startEdit = (note: Note) => {
@@ -130,9 +155,14 @@ export default function MyNotesPage() {
       );
       setEditingNoteId(null);
       setMessage("Note updated successfully!");
-    } catch (err: any) {
-      setMessage(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage(err.message);
+      } else {
+        setMessage("An unknown error occurred");
+      }
     }
+
   };
 
   return (
@@ -160,11 +190,10 @@ export default function MyNotesPage() {
                 <button
                   onClick={handleUpgrade}
                   disabled={subscription === "pro"}
-                  className={`px-4 py-2 rounded text-white ${
-                    subscription === "pro"
+                  className={`px-4 py-2 rounded text-white ${subscription === "pro"
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700"
-                  }`}
+                    }`}
                 >
                   Upgrade to PRO
                 </button>

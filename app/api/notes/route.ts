@@ -7,21 +7,20 @@ import Tenant from "../../models/Tenant";
 export async function POST(req: NextRequest) {
   const userId = req.headers.get("x-user-id");
   const tenantId = req.headers.get("x-tenantId");
-  const role = req.headers.get("x-user-role");
 
   try {
     await connectDB();
     const tenant = await Tenant.findById(tenantId);
     if (!tenant) {
-      return NextResponse.json(
-        { error: "Tenant not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Tenant not found" }, { status: 404 });
     }
     const notes = await Note.find({ tenantId: tenantId });
-    if (notes.length >= 3 && tenant.subscription =="free") {
+    if (notes.length >= 3 && tenant.subscription == "free") {
       return NextResponse.json(
-        { error: "Free version can create only 3 notes, Ask admin to upgrade to pro. If admin, got to mynotes>upgrade to pro" },
+        {
+          error:
+            "Free version can create only 3 notes, Ask admin to upgrade to pro. If admin, got to mynotes>upgrade to pro",
+        },
         { status: 429 }
       );
     }
@@ -35,20 +34,21 @@ export async function POST(req: NextRequest) {
       userId,
     });
     return NextResponse.json({ note });
-  } catch (err: any) {
-    console.error("Create note error:", err.message);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
   }
 }
 
 // GET /notes - list all notes for tenant
 export async function GET(req: NextRequest) {
-  const userId = req.headers.get("x-user-id");
   const tenantId = req.headers.get("x-tenantId");
-  const role = req.headers.get("x-user-role");
 
   try {
     await connectDB();
@@ -57,11 +57,14 @@ export async function GET(req: NextRequest) {
     const totalUsers = uniqueUserIds.length;
 
     return NextResponse.json({ notes, total: notes.length, totalUsers });
-  } catch (err: any) {
-    console.error("Get notes error:", err.message);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
   }
 }

@@ -15,12 +15,15 @@ export async function GET(
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
 
     return NextResponse.json({ success: true, note });
-  } catch (error: any) {
-    console.error("Get single note error:", error.message);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
   }
 }
 
@@ -52,12 +55,15 @@ export async function PUT(
     await note.save();
 
     return NextResponse.json({ note });
-  } catch (err: any) {
-    console.error("Update note error:", err.message);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
   }
 }
 
@@ -86,11 +92,14 @@ export async function DELETE(
 
     await Note.deleteOne({ _id: id });
     return NextResponse.json({ message: "Note deleted" });
-  } catch (err: any) {
-    console.error("Delete note error:", err.message);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
   }
 }

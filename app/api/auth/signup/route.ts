@@ -20,7 +20,10 @@ export async function POST(req: NextRequest) {
 
     const existing = await User.findOne({ email, tenantId: tenant._id });
     if (existing) {
-      return NextResponse.json({ error: "User already exists" }, { status: 400 });
+      return NextResponse.json(
+        { error: "User already exists" },
+        { status: 400 }
+      );
     }
 
     const hashed = await bcrypt.hash(password, 10);
@@ -32,8 +35,14 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ message: "User created", userId: user._id });
-  } catch (err: any) {
-    console.error("Signup error:", err.message);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
   }
 }

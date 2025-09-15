@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -9,6 +9,13 @@ export default function AuthPage() {
   const [form, setForm] = useState({ email: "", password: "", tenantSlug: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+    const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("unauthorized") === "1") {
+      alert("⚠️ You must log in to access that page!");
+    }
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -33,9 +40,14 @@ export default function AuthPage() {
 
       // ✅ redirect on success
       router.push("/");
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -47,21 +59,19 @@ export default function AuthPage() {
         <div className="flex mb-6">
           <button
             onClick={() => setMode("login")}
-            className={`w-1/2 py-2 font-semibold border-b-2 transition-colors ${
-              mode === "login"
+            className={`w-1/2 py-2 font-semibold border-b-2 transition-colors ${mode === "login"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-gray-500"
-            }`}
+              }`}
           >
             Login
           </button>
           <button
             onClick={() => setMode("signup")}
-            className={`w-1/2 py-2 font-semibold border-b-2 transition-colors ${
-              mode === "signup"
+            className={`w-1/2 py-2 font-semibold border-b-2 transition-colors ${mode === "signup"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-gray-500"
-            }`}
+              }`}
           >
             Signup
           </button>

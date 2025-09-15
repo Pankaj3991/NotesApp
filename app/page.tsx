@@ -32,10 +32,14 @@ export default function Home() {
       setMessage("Note saved successfully!");
       setTitle("");
       setContent("");
-    } catch (err: any) {
-      console.log(err);
-      setMessage(err.message);
-    } finally {
+    } catch (err: unknown) {
+  if (err instanceof Error) {
+    setMessage(err.message);
+  } else {
+    setMessage("An unknown error occurred");
+  }
+}
+ finally {
       setLoading(false);
     }
   };

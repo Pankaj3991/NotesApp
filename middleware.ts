@@ -14,7 +14,6 @@ export async function middleware(req: NextRequest) {
 
   if (!token) {
     const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("unauthorized", "1"); // add query param
     return NextResponse.redirect(loginUrl);
   }
 

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import UnauthorizedAlert from "./UnauthorizedAlert";
+import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -47,8 +46,9 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <UnauthorizedAlert/>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <div className="text-red-600 text-xl mb-4">Please login before accessing protected routes</div>
+
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
         {/* Tabs */}
         <div className="flex mb-6">

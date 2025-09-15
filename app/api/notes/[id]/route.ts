@@ -30,9 +30,11 @@ export async function GET(
 // PUT /notes/:id - update note
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { params } = context;
   const { id } = await params; // must await
+  
   const userId = req.headers.get("x-user-id");
   const tenantId = req.headers.get("x-tenantId");
   const role = req.headers.get("x-user-role");
@@ -70,14 +72,15 @@ export async function PUT(
 // DELETE /notes/:id - delete note
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const userId = req.headers.get("x-user-id");
   const tenantId = req.headers.get("x-tenantId");
   const role = req.headers.get("x-user-role");
 
   try {
-    const { id } = await params; // must await
+    const { params } = context;
+    const { id } = await params; // <-- await here
     await connectDB();
     const note = await Note.findOne({ _id: id, tenantId: tenantId });
     if (!note)

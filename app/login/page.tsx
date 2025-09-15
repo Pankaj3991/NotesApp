@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import UnauthorizedAlert from "./UnauthorizedAlert";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -9,13 +10,6 @@ export default function AuthPage() {
   const [form, setForm] = useState({ email: "", password: "", tenantSlug: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-    const searchParams = useSearchParams();
-
-  useEffect(() => {
-    if (searchParams.get("unauthorized") === "1") {
-      alert("⚠️ You must log in to access that page!");
-    }
-  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -54,14 +48,15 @@ export default function AuthPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      <UnauthorizedAlert/>
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
         {/* Tabs */}
         <div className="flex mb-6">
           <button
             onClick={() => setMode("login")}
             className={`w-1/2 py-2 font-semibold border-b-2 transition-colors ${mode === "login"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-gray-500"
               }`}
           >
             Login
@@ -69,8 +64,8 @@ export default function AuthPage() {
           <button
             onClick={() => setMode("signup")}
             className={`w-1/2 py-2 font-semibold border-b-2 transition-colors ${mode === "signup"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-gray-500"
               }`}
           >
             Signup
